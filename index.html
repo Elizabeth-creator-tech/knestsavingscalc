@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KNEST Member Savings Calculator</title>
+    <meta name="description" content="Estimate your future savings with the KNEST Member Savings Calculator. Calculate contributions, interest, and total growth.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-green: #2e7d32;
+            --primary-hover: #1b5e20;
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-main: #2d3436;
+            --text-muted: #636e72;
+            --shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            --border-radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: var(--text-main);
+        }
+
+        .calculator-card {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        h1 {
+            color: var(--primary-green);
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 300;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #edf2f7;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary-green);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2);
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .results-section {
+            margin-top: 32px;
+            padding-top: 32px;
+            border-top: 2px dashed #edf2f7;
+            display: none; /* Hidden by default */
+        }
+
+        .results-section.active {
+            display: block;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .result-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .result-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .total-savings {
+            background: rgba(46, 125, 50, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border: 1px solid rgba(46, 125, 50, 0.1);
+            text-align: center;
+        }
+
+        .total-savings .result-label {
+            display: block;
+            margin-bottom: 4px;
+            color: var(--primary-green);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.75rem;
+        }
+
+        .total-savings .result-value {
+            font-size: 2rem;
+            color: var(--primary-green);
+            display: block;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .calculator-card {
+                padding: 24px;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="calculator-card">
+        <header>
+            <h1>KNEST Member Savings Calculator</h1>
+            <p class="subtitle">Estimate your savings based on your monthly contribution</p>
+        </header>
+
+        <form id="calcForm">
+            <div class="form-group">
+                <label for="monthlyContribution">Monthly Contribution (KES)</label>
+                <div class="input-wrapper">
+                    <input type="number" id="monthlyContribution" placeholder="e.g. 5000" required min="1">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="months">Number of Months</label>
+                <div class="input-wrapper">
+                    <input type="number" id="months" placeholder="e.g. 12" required min="1">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="annualRate">Annual Interest Rate (%)</label>
+                <div class="input-wrapper">
+                    <input type="number" id="annualRate" step="0.01" placeholder="e.g. 10" required min="0">
+                </div>
+            </div>
+
+            <button type="submit">Calculate</button>
+        </form>
+
+        <section id="results" class="results-section">
+            <div class="result-item">
+                <span class="result-label">Total Contributions</span>
+                <span class="result-value" id="resTotalContrib">KES 0</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Interest Earned</span>
+                <span class="result-value" id="resInterest">KES 0</span>
+            </div>
+            <div class="total-savings">
+                <span class="result-label">Total Savings</span>
+                <span class="result-value" id="resTotalSavings">KES 0</span>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.getElementById('calcForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Get values
+            const p = parseFloat(document.getElementById('monthlyContribution').value);
+            const n = parseInt(document.getElementById('months').value);
+            const annualRate = parseFloat(document.getElementById('annualRate').value);
+
+            // Calculation logic
+            const monthlyRate = annualRate / 100 / 12;
+            
+            let totalSavings;
+            if (monthlyRate === 0) {
+                totalSavings = p * n;
+            } else {
+                // Formula: total = P * ((1 + r)^n - 1) / r
+                totalSavings = p * ((Math.pow(1 + monthlyRate, n) - 1) / monthlyRate);
+            }
+
+            const totalContributions = p * n;
+            const interestEarned = totalSavings - totalContributions;
+
+            // Format numbers
+            const formatter = new Intl.NumberFormat('en-KE', {
+                style: 'currency',
+                currency: 'KES',
+                minimumFractionDigits: 2
+            });
+
+            // Update UI
+            document.getElementById('resTotalContrib').textContent = formatter.format(totalContributions);
+            document.getElementById('resInterest').textContent = formatter.format(interestEarned);
+            document.getElementById('resTotalSavings').textContent = formatter.format(totalSavings);
+
+            // Show results
+            document.getElementById('results').classList.add('active');
+            
+            // Scroll results into view if needed
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+    </script>
+</body>
+</html>
